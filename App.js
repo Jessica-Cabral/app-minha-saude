@@ -4,9 +4,10 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { View, Text, StyleSheet } from "react-native";
 
-import RegistrarGlicemia from "./screens/RegistrarGlicemia";
-import RegistrarPressao from "./screens/RegistrarPressao";
-import MeusRegistros from "./screens/MeusRegistros";
+import RegistrarGlicemia from "./app/screens/RegistrarGlicemia";
+import RegistrarPressao from "./app/screens/RegistrarPressao";
+import MeusRegistros from "./app/screens/MeusRegistros";
+import Home from "./app/screens/Home";
 
 const Drawer = createDrawerNavigator();
 
@@ -38,6 +39,13 @@ export default function App() {
           drawerLabelStyle: { fontWeight: 'bold', fontSize: 16 },
         }}
       >
+        <Drawer.Screen
+          name="Home"
+          component={Home}
+          options={{
+            drawerIcon: ({ color }) => <Ionicons name="home" size={22} color={color} />,
+          }}
+        />
         <Drawer.Screen
           name="Meus Registros"
           component={MeusRegistros}
