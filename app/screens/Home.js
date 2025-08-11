@@ -11,9 +11,10 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Home = ({ navigation }) => {
+const Home = ({ route, navigation }) => {
   const [nome, setNome] = useState("");
   const [nomeSalvo, setNomeSalvo] = useState("");
+
 
   // Carrega o nome salvo ao iniciar
   useEffect(() => {
@@ -31,19 +32,7 @@ const Home = ({ navigation }) => {
     carregarNome();
   }, []);
 
-  const salvarNome = async () => {
-    if (!nome.trim()) {
-      Alert.alert("Atenção", "Digite seu nome");
-      return;
-    }
-    try {
-      await AsyncStorage.setItem("@nome_usuario", nome);
-      setNomeSalvo(nome);
-      Alert.alert("Sucesso", "Nome salvo com sucesso!");
-    } catch (e) {
-      Alert.alert("Erro", "Não foi possível salvar o nome");
-    }
-  };
+  
 
   const navegarComNome = (tela) => {
     if (nomeSalvo) {
@@ -60,11 +49,12 @@ const Home = ({ navigation }) => {
         style={styles.logo}
         resizeMode="contain"
       />
-      
-      <Text style={styles.subtitle}>
-        Cada registro é um passo para seu bem-estar!
+      <Text style={styles.saudacao}>
+        {nomeSalvo
+          ? `Olá, ${nomeSalvo}! `
+          : ""}
       </Text>
-
+      <Text style={styles.subtitle}>Cada registro é um passo para seu bem-estar!</Text>
       <TouchableOpacity
         style={styles.card}
         onPress={() => navegarComNome("RegistrarSaude")}
@@ -104,7 +94,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: 16,
     color: "#555",
     textAlign: "center",
     marginBottom: 40,
@@ -112,7 +102,8 @@ const styles = StyleSheet.create({
   },
   saudacao: {
     marginTop: 10,
-    fontSize: 16,
+    marginBottom:20,
+    fontSize: 25,
     color: "#0277bd",
     textAlign: "center",
     fontWeight: "500",

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Home from "./Home";
 
 const Login = ({ navigation }) => {
   const [nome, setNome] = useState("");
@@ -73,7 +74,7 @@ const Login = ({ navigation }) => {
           value={nome}
           onChangeText={setNome}
         />
-        <TouchableOpacity style={styles.botaoSalvar} onPress={() => navegarComNome("Home")}>
+        <TouchableOpacity style={styles.botaoSalvar} onPress={salvarNome}>
           <Text style={styles.botaoTexto}>Entrar</Text>
         </TouchableOpacity>
       </View>
