@@ -1,101 +1,137 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import Botao from '../components/Botao';
-import Input from '../components/Input';
-import { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Alert,
+  Image,
+} from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Home() {
-  const navigation = useNavigation();
-  const [nome, setNome] = useState('');
+const Home = ({ navigation }) => {
+  const [nome, setNome] = useState("");
+  const [nomeSalvo, setNomeSalvo] = useState("");
 
-  async function validarUsuario() {
-    if (!email || !senha) {
-      alert("Informe o usuário e a senha");
+  // Carrega o nome salvo ao iniciar
+  useEffect(() => {
+    const carregarNome = async () => {
+      try {
+        const nomeArmazenado = await AsyncStorage.getItem("@nome_usuario");
+        if (nomeArmazenado) {
+          setNomeSalvo(nomeArmazenado);
+          setNome(nomeArmazenado);
+        }
+      } catch (e) {
+        Alert.alert("Erro", "Não foi possível carregar o nome");
+      }
+    };
+    carregarNome();
+  }, []);
+
+  const salvarNome = async () => {
+    if (!nome.trim()) {
+      Alert.alert("Atenção", "Digite seu nome");
       return;
     }
     try {
-      const usuarioCadastrado = await AsyncStorage.getItem(email);
-      const usuario = JSON.parse(usuarioCadastrado);
-      if (!usuarioCadastrado) {
-        alert("Email não cadastrado!");
-        return;
-      }
-      if (usuario.senha === senha) {
-        navigation.navigate("TelaPrincipal");
-      } else {
-        alert("Senha incorreta");
-      }
-    } catch (error) {
-      alert("Dados inválidos");
+      await AsyncStorage.setItem("@nome_usuario", nome);
+      setNomeSalvo(nome);
+      Alert.alert("Sucesso", "Nome salvo com sucesso!");
+    } catch (e) {
+      Alert.alert("Erro", "Não foi possível salvar o nome");
     }
-  }
+  };
+
+  const navegarComNome = (tela) => {
+    if (nomeSalvo) {
+      navigation.navigate(tela, { nomeUsuario: nomeSalvo });
+    } else {
+      Alert.alert("Atenção", "Por favor, salve seu nome primeiro");
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/logo.png')}
+        source={require("../../assets/logo.png")}
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.nomeSistema}>Diário Saúde</Text>
-      {/* <Text style={styles.subtitulo}>Gerencie sua saúde de forma simples e prática</Text> */}
-      <Text style={styles.subtitulo}>Meus índices na sua tela</Text>
-      <Input 
-        placeholder="Informe seu nome" 
-        value={nome} 
-        onChangeText={setNome} 
-        style={styles.input}
-      />
-      <Botao 
-        titulo="Entrar" 
-        onPress={validarUsuario} 
-        style={styles.botao}
-      />
+      
+      <Text style={styles.subtitle}>
+        Cada registro é um passo para seu bem-estar!
+      </Text>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navegarComNome("RegistrarSaude")}
+      >
+        <Ionicons name="add-circle" size={30} color="#0277bd" />
+        <Text style={styles.cardText}>Novo Registro</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navegarComNome("MeusRegistros")}
+      >
+        <Ionicons name="list" size={30} color="#0277bd" />
+        <Text style={styles.cardText}>Meus Registros</Text>
+      </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#e6f7ff',
+    backgroundColor: "#f0f4f8",
   },
   logo: {
     width: 150,
     height: 150,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 20,
   },
-  nomeSistema: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#007acc',
-    textAlign: 'center',
-    marginBottom: 10,
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#0277bd",
+    marginBottom: 20,
+    textAlign: "center",
   },
-  subtitulo: {
-    fontSize: 16,
-    color: '#555',
-    textAlign: 'center',
-    marginBottom: 30,
+  subtitle: {
+    fontSize: 20,
+    color: "#555",
+    textAlign: "center",
+    marginBottom: 40,
+    //fontStyle: "italic",
   },
-  input: {
-    marginBottom: 15,
-  },
-  botao: {
+  saudacao: {
     marginTop: 10,
-    backgroundColor: '#007acc',
-    padding: 10,
-    borderRadius: 5,
-  },
-  link: {
-    color: '#007acc',
-    textAlign: 'center',
-    marginTop: 20,
     fontSize: 16,
-    textDecorationLine: 'underline',
+    color: "#0277bd",
+    textAlign: "center",
+    fontWeight: "500",
+  },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 15,
+    elevation: 3,
+  },
+  cardText: {
+    marginLeft: 15,
+    fontSize: 18,
+    color: "#0277bd",
+    fontWeight: "500",
   },
 });
+
+export default Home;

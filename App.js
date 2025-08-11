@@ -1,92 +1,83 @@
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { View, Text, StyleSheet } from "react-native";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import 'react-native-gesture-handler';
 
-import RegistrarGlicemia from "./app/screens/RegistrarGlicemia";
-import RegistrarPressao from "./app/screens/RegistrarPressao";
-import MeusRegistros from "./app/screens/MeusRegistros";
-import Home from "./app/screens/Home";
+import Login from './app/screens/Login';
+import Home from './app/screens/Home';
+import RegistrarSaude from './app/screens/RegistrarSaude';
+import MeusRegistros from './app/screens/MeusRegistros';
 
-const Drawer = createDrawerNavigator();
 
-// Estilização das páginas
-function CustomDrawerContent(props) {
+const Stack = createStackNavigator();
+
+// Componente de cabeçalho personalizado
+const CustomHeader = ({ navigation }) => {
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: '#b3e5fc', flex: 1 }}>
-      <View style={styles.drawerHeader}>
-        <Ionicons name="heart" size={40} color="#ffffff" />
-        <Text style={styles.drawerHeaderText}>Minha Saúde</Text>
-        <Text style={styles.drawerHeaderSubText}>Cuidando de você</Text>
-      </View>
-      <DrawerItemList {...props} />
-    </DrawerContentScrollView>
+    <View style={styles.headerContainer}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back" size={24} color="white" />
+      </TouchableOpacity>
+      <Text style={styles.headerTitle}>Diário MinhaSaúde</Text>
+      <View style={{ width: 24 }} /> {/* Espaço para alinhamento */}
+    </View>
   );
-}
+};
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Drawer.Navigator
-        drawerContent={props => <CustomDrawerContent {...props} />}
+      <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: '#81d4fa' },
-          headerTintColor: 'white',
-          drawerActiveBackgroundColor: '#81d4fa',
-          drawerActiveTintColor: 'white',
-          drawerInactiveTintColor: '#333',
-          drawerLabelStyle: { fontWeight: 'bold', fontSize: 16 },
+          header: ({ navigation }) => <CustomHeader navigation={navigation} />,
+          headerStyle: {
+            backgroundColor: '#81d4fa',
+          },
+          cardStyle: {
+            backgroundColor: '#f0f4f8'
+          }
         }}
       >
-        <Drawer.Screen
-          name="Home"
-          component={Home}
-          options={{
-            drawerIcon: ({ color }) => <Ionicons name="home" size={22} color={color} />,
-          }}
+        <Stack.Screen 
+          name="Login" 
+          component={Login} 
+          options={{ headerShown: false }} 
         />
-        <Drawer.Screen
-          name="Meus Registros"
-          component={MeusRegistros}
-          options={{
-            drawerIcon: ({ color }) => <Ionicons name="list" size={22} color={color} />,
-          }}
+        <Stack.Screen 
+          name="Home" 
+          component={Home} 
+          options={{ title: 'Home' }} 
         />
-        <Drawer.Screen
-          name="Registrar Glicemia"
-          component={RegistrarGlicemia}
-          options={{
-            drawerIcon: ({ color }) => <Ionicons name="water" size={22} color={color} />,
-          }}
+        <Stack.Screen 
+          name="RegistrarSaude" 
+          component={RegistrarSaude} 
+          options={{ title: 'Registrar Saúde' }} 
         />
-        <Drawer.Screen
-          name="Registrar Pressão"
-          component={RegistrarPressao}
-          options={{
-            drawerIcon: ({ color }) => <Ionicons name="heart" size={22} color={color} />,
-          }}
+        <Stack.Screen 
+          name="MeusRegistros" 
+          component={MeusRegistros} 
+          options={{ title: 'Meus Registros' }} 
         />
-      </Drawer.Navigator>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  drawerHeader: {
-    padding: 20,
-    backgroundColor: "#4fc3f7",
-    marginBottom: 10,
-    alignItems: "center",
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#81d4fa',
+    height: 60,
   },
-  drawerHeaderText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
-    marginTop: 5,
-  },
-  drawerHeaderSubText: {
-    fontSize: 14,
-    color: "#e1f5fe",
+  headerTitle: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
