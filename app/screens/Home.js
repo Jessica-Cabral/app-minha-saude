@@ -70,6 +70,13 @@ const Home = ({ route, navigation }) => {
         <Ionicons name="list" size={30} color="#0277bd" />
         <Text style={styles.cardText}>Meus Registros</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navegarComNome("Comparativo")}
+      >
+        <Ionicons name="stats-chart" size={30} color="#0277bd" />
+        <Text style={styles.cardText}>Comparativo</Text>
+      </TouchableOpacity>
     </View>
   );
 };

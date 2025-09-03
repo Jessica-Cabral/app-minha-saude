@@ -9,7 +9,6 @@ import {
   Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Picker } from "@react-native-picker/picker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -42,8 +41,12 @@ const RegistrarSaude = ({ route }) => {
     if (!valor) {
       Alert.alert(
         "Atenção",
-        `Informe o valor da ${
-          tipoRegistro === "glicemia" ? "glicemia" : "pressão sistólica"
+        `Informe o valor do ${
+          tipoRegistro === "glicemia"
+            ? "glicemia"
+            : tipoRegistro === "pressao"
+            ? "pressão sistólica"
+            : "batimento cardíaco"
         }`
       );
       return false;
@@ -78,12 +81,14 @@ const RegistrarSaude = ({ route }) => {
 
     if (tipoRegistro === "glicemia") {
       registro.valor = `${valor} mg/dL`;
-    } else {
+    } else if (tipoRegistro === "pressao") {
       registro.valor = `${valor}/${valorSecundario} mmHg`;
       registro.detalhes = {
         sistolica: valor,
         diastolica: valorSecundario,
       };
+    } else if (tipoRegistro === "batimentos") {
+      registro.valor = `${valor} bpm`;
     }
 
     return registro;
@@ -110,7 +115,6 @@ const RegistrarSaude = ({ route }) => {
 
     if (mode === "date" && Platform.OS === "android") {
       setData(currentDate);
-      // depois de escolher a data, abre o picker de hora
       setTimeout(() => {
         showPicker("time");
       }, 200);
@@ -124,25 +128,69 @@ const RegistrarSaude = ({ route }) => {
       <Text style={styles.title}>
         {nomeUsuario ? `Registrar Saúde - ${nomeUsuario}` : "Registrar Saúde"}
       </Text>
-    <Text style={styles.label}>Escolha o tipo de registro</Text>
-      <View style={styles.pickerContainer}>
-       
-        <Picker
-          selectedValue={tipoRegistro}
-          onValueChange={(itemValue) => {
-            setTipoRegistro(itemValue);
+      <Text style={styles.label}>Escolha o tipo de registro</Text>
+      <View style={styles.radioContainer}>
+        <TouchableOpacity
+          style={[
+            styles.radioButton,
+            tipoRegistro === "glicemia" && styles.radioButtonSelected,
+          ]}
+          onPress={() => {
+            setTipoRegistro("glicemia");
             limparCampos();
           }}
-          style={styles.picker}
-          dropdownIconColor="#0277bd"
         >
-          <Picker.Item label="Glicemia" value="glicemia" />
-          <Picker.Item label="Pressão Arterial" value="pressao" />
-        </Picker>
+          <Text
+            style={[
+              styles.radioText,
+              tipoRegistro === "glicemia" && styles.radioTextSelected,
+            ]}
+          >
+            Glicemia
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.radioButton,
+            tipoRegistro === "pressao" && styles.radioButtonSelected,
+          ]}
+          onPress={() => {
+            setTipoRegistro("pressao");
+            limparCampos();
+          }}
+        >
+          <Text
+            style={[
+              styles.radioText,
+              tipoRegistro === "pressao" && styles.radioTextSelected,
+            ]}
+          >
+            Pressão Arterial
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.radioButton,
+            tipoRegistro === "batimentos" && styles.radioButtonSelected,
+          ]}
+          onPress={() => {
+            setTipoRegistro("batimentos");
+            limparCampos();
+          }}
+        >
+          <Text
+            style={[
+              styles.radioText,
+              tipoRegistro === "batimentos" && styles.radioTextSelected,
+            ]}
+          >
+            Batimentos Cardíacos
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {tipoRegistro === "glicemia" ? (
-        <>
+        <View>
           <Text style={styles.label}>Valor da Glicemia (mg/dL)</Text>
           <TextInput
             style={styles.input}
@@ -151,8 +199,8 @@ const RegistrarSaude = ({ route }) => {
             value={valor}
             onChangeText={setValor}
           />
-        </>
-      ) : (
+        </View>
+      ) : tipoRegistro === "pressao" ? (
         <View style={styles.dualInputContainer}>
           <View style={styles.dualInput}>
             <Text style={styles.label}>Sistólica</Text>
@@ -174,6 +222,17 @@ const RegistrarSaude = ({ route }) => {
               onChangeText={setValorSecundario}
             />
           </View>
+        </View>
+      ) : (
+        <View>
+          <Text style={styles.label}>Batimentos Cardíacos (bpm)</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            placeholder="Ex: 75"
+            value={valor}
+            onChangeText={setValor}
+          />
         </View>
       )}
 
@@ -215,7 +274,11 @@ const RegistrarSaude = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#f8f9fa" },
+  container: { 
+    flex: 1, 
+    padding: 20, 
+    backgroundColor: "#f8f9fa",
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -223,14 +286,31 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
-  pickerContainer: {
+  radioContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  radioButton: {
+    flex: 1,
+    padding: 10,
     borderWidth: 1,
     borderColor: "#ced4da",
     borderRadius: 8,
-    marginBottom: 20,
-    overflow: "hidden",
+    alignItems: "center",
+    marginHorizontal: 5,
   },
-  picker: { width: "100%", backgroundColor: "white" },
+  radioButtonSelected: {
+    backgroundColor: "#0277bd",
+    borderColor: "#0277bd",
+  },
+  radioText: {
+    fontSize: 16,
+    color: "#495057",
+  },
+  radioTextSelected: {
+    color: "white",
+  },
   label: {
     fontSize: 16,
     color: "#495057",

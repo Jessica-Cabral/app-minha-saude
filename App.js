@@ -9,6 +9,7 @@ import Login from './app/screens/Login';
 import Home from './app/screens/Home';
 import RegistrarSaude from './app/screens/RegistrarSaude';
 import MeusRegistros from './app/screens/MeusRegistros';
+import Comparativo from './app/screens/Comparativo';
 
 
 const Stack = createStackNavigator();
@@ -60,6 +61,11 @@ export default function App() {
           component={MeusRegistros} 
           options={{ title: 'Meus Registros' }} 
         />
+        <Stack.Screen 
+          name="Comparativo" 
+          component={Comparativo} 
+          options={{ title: 'Comparativo' }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -74,6 +80,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#81d4fa',
     height: 60,
+    marginTop:50
   },
   headerTitle: {
     color: 'white',
